@@ -35,7 +35,7 @@ export default function ServiceProviderCard({ provider, priority = false }: { pr
         <span className="absolute left-3 top-3 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600">
           {SERVICE_CATEGORY_LABELS[provider.category]}
         </span>
-        <div className="absolute right-3 top-3" onClick={(e) => e.preventDefault()}>
+        <div className="absolute right-3 top-3">
           <FavoriteButton serviceProviderId={provider.id} />
         </div>
       </div>
