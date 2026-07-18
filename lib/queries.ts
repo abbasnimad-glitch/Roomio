@@ -424,7 +424,7 @@ export const getUniversities = unstable_cache(
     const { data } = await supabase.from("universities").select("*").order("name");
     return data ?? [];
   },
-  ["universities"],
+  ["universities-V2"],
   { revalidate: 3600 }
 );
 
