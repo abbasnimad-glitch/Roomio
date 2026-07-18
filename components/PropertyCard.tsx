@@ -5,7 +5,7 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import type { Property } from "@/types/database";
 import { formatBaht, publicImageUrl, cn, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
-import { ROOM_TYPE_LABELS, AVAILABILITY_LABELS, AVAILABILITY_COLORS } from "@/lib/constants";
+import { getRoomTypeLabels, getAvailabilityLabels, AVAILABILITY_COLORS } from "@/lib/constants";
 import FavoriteButton from "@/components/FavoriteButton";
 import RatingStars from "@/components/RatingStars";
 import FeaturedBadge from "@/components/FeaturedBadge";
@@ -15,6 +15,8 @@ import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function PropertyCard({ property, priority = false }: { property: Property; priority?: boolean }) {
   const { t, locale } = useLanguage();
+  const roomTypeLabels = getRoomTypeLabels(locale);
+  const availabilityLabels = getAvailabilityLabels(locale);
   const cover = property.images?.[0];
   const imageUrl = cover
     ? publicImageUrl("property-images", cover.storage_path)
@@ -52,7 +54,7 @@ export default function PropertyCard({ property, priority = false }: { property:
             AVAILABILITY_COLORS[property.availability]
           )}
         >
-          {AVAILABILITY_LABELS[property.availability]}
+          {availabilityLabels[property.availability]}
         </span>
         <div className="absolute right-3 top-3">
           <FavoriteButton propertyId={property.id} />
@@ -74,7 +76,7 @@ export default function PropertyCard({ property, priority = false }: { property:
           <MapPin className="h-3.5 w-3.5" />
           {districtLabel}
         </p>
-        <p className="text-xs text-ink-500">{ROOM_TYPE_LABELS[property.room_type]}</p>
+        <p className="text-xs text-ink-500">{roomTypeLabels[property.room_type]}</p>
         {property.rating_count > 0 && (
           <div className="mt-0.5">
             <RatingStars rating={property.rating_avg} count={property.rating_count} />

@@ -1,9 +1,9 @@
 "use client";
 
 import ServiceProviderCard from "@/components/ServiceProviderCard";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/constants";
+import { getServiceCategoryLabels } from "@/lib/constants";
 import type { ServiceCategory, District, ServiceProvider } from "@/types/database";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function ServicesContent({
   providers,
@@ -16,7 +16,8 @@ export default function ServicesContent({
   category?: ServiceCategory;
   districtId?: number;
 }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const serviceCategoryLabels = getServiceCategoryLabels(locale);
 
   return (
     <div className="container-app py-8">
@@ -30,7 +31,7 @@ export default function ServicesContent({
         >
           {t.listings.allCategories}
         </a>
-        {(Object.entries(SERVICE_CATEGORY_LABELS) as [ServiceCategory, string][]).map(([key, label]) => (
+        {(Object.entries(serviceCategoryLabels) as [ServiceCategory, string][]).map(([key, label]) => (
           <a
             key={key}
             href={`/services?category=${key}`}
@@ -54,7 +55,7 @@ export default function ServicesContent({
             href={`/services?${category ? `category=${category}&` : ""}district=${d.id}`}
             className={`rounded-full border px-3 py-1.5 text-xs font-medium ${districtId === d.id ? "border-primary text-primary" : "border-ink-300 text-ink-700"}`}
           >
-            {d.name_en}
+            {localizedName(locale, d.name_th, d.name_en)}
           </a>
         ))}
       </div>
