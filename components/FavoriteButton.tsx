@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ export default function FavoriteButton({
   propertyId?: string;
   serviceProviderId?: string;
 }) {
+  const instanceId = useId();
   const [supabase] = useState(() => createClient());
   const [isFavorited, setIsFavorited] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -39,7 +40,7 @@ export default function FavoriteButton({
     if (!userId) return;
 
     const channel = supabase
-      .channel(`favorites-${propertyId ?? serviceProviderId}-${userId}`)
+      .channel(`favorites-${propertyId ?? serviceProviderId}-${userId}-${instanceId}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "favorites", filter: `user_id=eq.${userId}` },
@@ -62,7 +63,7 @@ export default function FavoriteButton({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, propertyId, serviceProviderId, supabase]);
+  }, [userId, propertyId, serviceProviderId, supabase, instanceId]);
 
   function toggle(e: React.MouseEvent) {
     e.preventDefault();
