@@ -149,9 +149,11 @@ export const getPropertyBySlug = cache(async (slug: string): Promise<Property | 
     .eq("slug", slug)
     .eq("status", "approved")
     .single();
-  if (error) return null;
+  if (error) {
+    console.error("getPropertyBySlug FAILED. slug=", slug, "error=", JSON.stringify(error));
+    return null;
+  }
 
-  // fire-and-forget view count increment
   supabase.rpc("increment_property_view", { property_slug: slug }).then(() => {});
 
   return data as unknown as Property;
