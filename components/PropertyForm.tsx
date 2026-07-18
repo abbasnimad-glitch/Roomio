@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Property, District, University, RoomType, GenderPolicy, PropertyType } from "@/types/database";
 import { ROOM_TYPE_LABELS, GENDER_POLICY_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/constants";
 import type { ActionResult } from "@/lib/actions/owner";
+import PropertyLocationPicker, { DEFAULT_LAT, DEFAULT_LNG } from "@/components/PropertyLocationPicker";
 
 const AMENITIES: { key: keyof Property; label: string }[] = [
   { key: "has_air_conditioner", label: "Air conditioner" },
@@ -31,6 +32,10 @@ export default function PropertyForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
+  const [coords, setCoords] = useState({
+    lat: property?.lat ?? DEFAULT_LAT,
+    lng: property?.lng ?? DEFAULT_LNG,
+  });
 
   function handleSubmit(formData: FormData) {
     setMessage(null);
@@ -140,31 +145,17 @@ export default function PropertyForm({
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="text-xs font-semibold text-ink-700">Latitude</label>
-          <input
-            name="lat"
-            type="number"
-            step="any"
-            required
-            defaultValue={property?.lat}
-            placeholder="7.0086"
-            className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
+      <div>
+        <label className="text-xs font-semibold text-ink-700">ตำแหน่งที่ตั้งบนแผนที่</label>
+        <div className="mt-1">
+          <PropertyLocationPicker
+            lat={coords.lat}
+            lng={coords.lng}
+            onChange={(lat, lng) => setCoords({ lat, lng })}
           />
         </div>
-        <div>
-          <label className="text-xs font-semibold text-ink-700">Longitude</label>
-          <input
-            name="lng"
-            type="number"
-            step="any"
-            required
-            defaultValue={property?.lng}
-            placeholder="100.4977"
-            className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
-          />
-        </div>
+        <input type="hidden" name="lat" value={coords.lat} />
+        <input type="hidden" name="lng" value={coords.lng} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
