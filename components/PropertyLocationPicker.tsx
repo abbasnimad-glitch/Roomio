@@ -94,7 +94,7 @@ function LocationPickerInner({
 
       <p className="mt-1.5 flex items-center gap-1 text-xs text-ink-500">
         <MapPin className="h-3.5 w-3.5" />
-        พิกัด: {lat.toFixed(6)}, {lng.toFixed(6)} — คลิกบนแผนที่หรือลากหมุดเพื่อปรับตำแหน่ง
+        คลิกบนแผนที่หรือลากหมุดเพื่อปรับตำแหน่ง
       </p>
     </div>
   );
