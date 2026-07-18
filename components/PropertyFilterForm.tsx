@@ -2,7 +2,7 @@
 
 import type { District, University, RoomType } from "@/types/database";
 import { ROOM_TYPE_LABELS } from "@/lib/constants";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function PropertyFilterForm({
   districts,
@@ -13,7 +13,7 @@ export default function PropertyFilterForm({
   universities: University[];
   params: Record<string, string | undefined>;
 }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   return (
     <form className="flex h-fit flex-col gap-4 rounded-2xl border border-ink-100 p-4">
@@ -31,7 +31,7 @@ export default function PropertyFilterForm({
         <select name="district" defaultValue={params.district ?? ""} className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring">
           <option value="">{t.search.allDistricts}</option>
           {districts.map((d) => (
-            <option key={d.id} value={d.id}>{d.name_en}</option>
+            <option key={d.id} value={d.id}>{localizedName(locale, d.name_th, d.name_en)}</option>
           ))}
         </select>
       </div>
@@ -40,7 +40,7 @@ export default function PropertyFilterForm({
         <select name="university" defaultValue={params.university ?? ""} className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring">
           <option value="">{t.search.any}</option>
           {universities.map((u) => (
-            <option key={u.id} value={u.id}>{u.name}</option>
+            <option key={u.id} value={u.id}>{localizedName(locale, u.name_th, u.name)}</option>
           ))}
         </select>
       </div>

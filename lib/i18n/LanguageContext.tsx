@@ -51,3 +51,14 @@ export function useLanguage() {
   if (!ctx) throw new Error("useLanguage must be used within LanguageProvider");
   return ctx;
 }
+
+// Picks the display name for a database record that carries a Thai name
+// (nameTh) and an English/fallback name (nameEn), based on the current
+// locale. nameTh may be null for records that haven't been translated yet
+// (e.g. a university row added before the name_th column was backfilled) —
+// in that case we fall back to nameEn regardless of locale, so the UI never
+// shows a blank label.
+export function localizedName(locale: Locale, nameTh: string | null | undefined, nameEn: string): string {
+  if (locale === "th" && nameTh) return nameTh;
+  return nameEn;
+}

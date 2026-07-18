@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import type { District, University } from "@/types/database";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function SearchBar({
   districts,
@@ -14,7 +14,7 @@ export default function SearchBar({
   universities: University[];
 }) {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [q, setQ] = useState("");
   const [districtId, setDistrictId] = useState("");
   const [universityId, setUniversityId] = useState("");
@@ -53,7 +53,7 @@ export default function SearchBar({
       >
         <option value="">{t.search.allDistricts}</option>
         {districts.map((d) => (
-          <option key={d.id} value={d.id}>{d.name_en}</option>
+          <option key={d.id} value={d.id}>{localizedName(locale, d.name_th, d.name_en)}</option>
         ))}
       </select>
 
@@ -66,7 +66,7 @@ export default function SearchBar({
       >
         <option value="">{t.search.anyUniversity}</option>
         {universities.map((u) => (
-          <option key={u.id} value={u.id}>{u.name}</option>
+          <option key={u.id} value={u.id}>{localizedName(locale, u.name_th, u.name)}</option>
         ))}
       </select>
 

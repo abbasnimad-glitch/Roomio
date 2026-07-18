@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
@@ -9,12 +11,20 @@ import RatingStars from "@/components/RatingStars";
 import FeaturedBadge from "@/components/FeaturedBadge";
 import BoostBadge from "@/components/BoostBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function PropertyCard({ property, priority = false }: { property: Property; priority?: boolean }) {
+  const { t, locale } = useLanguage();
   const cover = property.images?.[0];
   const imageUrl = cover
     ? publicImageUrl("property-images", cover.storage_path)
     : null;
+
+  const districtLabel = property.district
+    ? localizedName(locale, property.district.name_th, property.district.name_en)
+    : locale === "th"
+      ? "สงขลา"
+      : "Songkhla";
 
   return (
     <Link
@@ -62,7 +72,7 @@ export default function PropertyCard({ property, priority = false }: { property:
         </div>
         <p className="flex items-center gap-1 text-xs text-ink-500">
           <MapPin className="h-3.5 w-3.5" />
-          {property.district?.name_en ?? "Songkhla"}
+          {districtLabel}
         </p>
         <p className="text-xs text-ink-500">{ROOM_TYPE_LABELS[property.room_type]}</p>
         {property.rating_count > 0 && (
@@ -72,7 +82,7 @@ export default function PropertyCard({ property, priority = false }: { property:
         )}
         <div className="mt-2 flex items-baseline gap-1">
           <span className="text-lg font-bold text-primary-600">{formatBaht(property.price_monthly)}</span>
-          <span className="text-xs text-ink-500">/ month</span>
+          <span className="text-xs text-ink-500">{t.common.perMonth}</span>
         </div>
       </div>
     </Link>

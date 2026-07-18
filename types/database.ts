@@ -58,6 +58,7 @@ export interface District {
 export interface University {
   id: number;
   name: string;
+  name_th: string | null;
   district_id: number | null;
   lat: number | null;
   lng: number | null;
