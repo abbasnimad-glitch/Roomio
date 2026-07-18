@@ -8,3 +8,6 @@ out
 next-env.d.ts
 public/sw.js
 public/workbox-*.js
+.env.local
+.env*.local
+supabase/.temp/
