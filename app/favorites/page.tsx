@@ -16,7 +16,7 @@ export default async function FavoritesPage() {
     <div className="container-app py-8">
       <FavoritesRealtimeSync userId={profile.id} />
       <h1 className="text-2xl font-bold text-ink-900">My Favorites</h1>
-      <p className="mt-1 text-sm text-ink-500">Properties and service providers you ve saved.</p>
+      <p className="mt-1 text-sm text-ink-500">Properties and service providers you&apos;ve saved.</p>
 
       {isEmpty ? (
         <div className="mt-6 rounded-2xl border border-dashed border-ink-300 p-12 text-center text-ink-500">
