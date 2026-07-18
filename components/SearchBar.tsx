@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search } from "lucide-react";
 import type { District, University } from "@/types/database";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function SearchBar({
   districts,
@@ -13,6 +14,7 @@ export default function SearchBar({
   universities: University[];
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [q, setQ] = useState("");
   const [districtId, setDistrictId] = useState("");
   const [universityId, setUniversityId] = useState("");
@@ -37,7 +39,7 @@ export default function SearchBar({
           value={q}
           onChange={(e) => setQ(e.target.value)}
           type="text"
-          placeholder="Search by property name or keyword"
+          placeholder={t.search.placeholder}
           className="w-full bg-transparent text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none"
         />
       </div>
@@ -49,7 +51,7 @@ export default function SearchBar({
         onChange={(e) => setDistrictId(e.target.value)}
         className="rounded-full bg-transparent px-3 py-2 text-sm text-ink-700 focus-ring"
       >
-        <option value="">All districts</option>
+        <option value="">{t.search.allDistricts}</option>
         {districts.map((d) => (
           <option key={d.id} value={d.id}>{d.name_en}</option>
         ))}
@@ -62,7 +64,7 @@ export default function SearchBar({
         onChange={(e) => setUniversityId(e.target.value)}
         className="rounded-full bg-transparent px-3 py-2 text-sm text-ink-700 focus-ring"
       >
-        <option value="">Any university</option>
+        <option value="">{t.search.anyUniversity}</option>
         {universities.map((u) => (
           <option key={u.id} value={u.id}>{u.name}</option>
         ))}
@@ -72,7 +74,7 @@ export default function SearchBar({
         type="submit"
         className="w-full shrink-0 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-600 focus-ring sm:w-auto"
       >
-        Search
+        {t.search.search}
       </button>
     </form>
   );
