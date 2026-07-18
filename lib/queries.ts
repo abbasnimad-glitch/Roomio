@@ -41,7 +41,7 @@ const PROPERTY_SELECT = `
   district:districts(*),
   university:universities(*),
   images:property_images(*),
-  owner:profiles(*)
+  owner:profiles!left(*)
 `;
 
 export async function searchProperties(params: PropertySearchParams) {
@@ -249,7 +249,7 @@ export async function getServiceProviders(category?: string, districtId?: number
   const boostedQuery = applyProviderFilters(
     supabase
       .from("service_providers")
-      .select("*, images:service_provider_images(*), owner:profiles(is_verified)")
+      .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
       .eq("status", "approved")
       .eq("is_boosted", true)
       .or(`boost_end_at.is.null,boost_end_at.gt.${nowIso}`)
@@ -266,7 +266,7 @@ export async function getServiceProviders(category?: string, districtId?: number
   let restQuery = applyProviderFilters(
     supabase
       .from("service_providers")
-      .select("*, images:service_provider_images(*), owner:profiles(is_verified)")
+      .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
       .eq("status", "approved")
   ).order("is_featured", { ascending: false }).order("rating_avg", { ascending: false });
   if (boosted.length > 0) {
@@ -284,7 +284,7 @@ export const getServiceProviderBySlug = cache(async (slug: string): Promise<Serv
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("service_providers")
-    .select("*, images:service_provider_images(*), owner:profiles(is_verified)")
+    .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
     .eq("slug", slug)
     .eq("status", "approved")
     .single();
@@ -302,7 +302,7 @@ export async function getMyFavorites() {
     .select(`
       id,
       property:properties(${PROPERTY_SELECT}),
-      service_provider:service_providers(*, images:service_provider_images(*), owner:profiles(is_verified))
+      service_provider:service_providers(*, images:service_provider_images(*), owner:profiles!left(is_verified))
     `)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
@@ -592,7 +592,7 @@ export async function getAdminReports() {
 // ------------------------------------------------------------
 // Reviews
 // ------------------------------------------------------------
-const REVIEW_SELECT = `*, author:profiles(*), images:review_images(*)`;
+const REVIEW_SELECT = `*, author:profiles!left(*), images:review_images(*)`;
 
 export async function getPropertyReviews(propertyId: string): Promise<Review[]> {
   const supabase = await createClient();
