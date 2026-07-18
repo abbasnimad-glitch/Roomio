@@ -64,7 +64,10 @@ export default function FavoriteButton({
     };
   }, [userId, propertyId, serviceProviderId, supabase]);
 
-  function toggle() {
+  function toggle(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
     if (!userId) {
       window.location.href = "/auth/login";
       return;

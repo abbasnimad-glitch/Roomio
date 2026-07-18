@@ -44,7 +44,7 @@ export default function PropertyCard({ property, priority = false }: { property:
         >
           {AVAILABILITY_LABELS[property.availability]}
         </span>
-        <div className="absolute right-3 top-3" onClick={(e) => e.preventDefault()}>
+        <div className="absolute right-3 top-3">
           <FavoriteButton propertyId={property.id} />
         </div>
       </div>
