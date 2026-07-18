@@ -1,18 +1,29 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import type { ServiceProvider } from "@/types/database";
 import { publicImageUrl, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/constants";
+import { getServiceCategoryLabels } from "@/lib/constants";
 import RatingStars from "@/components/RatingStars";
 import FavoriteButton from "@/components/FavoriteButton";
 import FeaturedBadge from "@/components/FeaturedBadge";
 import BoostBadge from "@/components/BoostBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export default function ServiceProviderCard({ provider, priority = false }: { provider: ServiceProvider; priority?: boolean }) {
+  const { t, locale } = useLanguage();
+  const serviceCategoryLabels = getServiceCategoryLabels(locale);
   const cover = provider.images?.[0];
   const imageUrl = cover ? publicImageUrl("provider-images", cover.storage_path) : null;
+  const districtsCount = provider.working_districts.length;
+
+  const districtsLabel =
+    locale === "th"
+      ? `${t.service.servesPrefix} ${districtsCount} ${t.service.servesSuffix}`
+      : `${t.service.servesPrefix} ${districtsCount} district${districtsCount === 1 ? "" : "s"} in Songkhla`;
 
   return (
     <Link
@@ -33,7 +44,7 @@ export default function ServiceProviderCard({ provider, priority = false }: { pr
           <div className="flex h-full w-full items-center justify-center text-sm text-ink-500">No photo yet</div>
         )}
         <span className="absolute left-3 top-3 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600">
-          {SERVICE_CATEGORY_LABELS[provider.category]}
+          {serviceCategoryLabels[provider.category]}
         </span>
         <div className="absolute right-3 top-3">
           <FavoriteButton serviceProviderId={provider.id} />
@@ -47,12 +58,12 @@ export default function ServiceProviderCard({ provider, priority = false }: { pr
           ) : isCurrentlyFeatured(provider.is_featured, provider.featured_until) ? (
             <FeaturedBadge />
           ) : (
-            provider.owner?.is_verified && <VerifiedBadge label="Verified Technician" />
+            provider.owner?.is_verified && <VerifiedBadge label={t.service.verifiedTechnician} />
           )}
         </div>
         <p className="flex items-center gap-1 text-xs text-ink-500">
           <MapPin className="h-3.5 w-3.5" />
-          Serving {provider.working_districts.length} district{provider.working_districts.length === 1 ? "" : "s"}
+          {districtsLabel}
         </p>
         <div className="mt-1">
           <RatingStars rating={provider.rating_avg} count={provider.rating_count} />
