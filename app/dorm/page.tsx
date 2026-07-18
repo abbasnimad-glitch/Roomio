@@ -1,6 +1,5 @@
 import { searchProperties, getDistricts, getUniversities } from "@/lib/queries";
-import PropertyCard from "@/components/PropertyCard";
-import PropertyFilterForm from "@/components/PropertyFilterForm";
+import PropertyListingContent from "@/components/PropertyListingContent";
 import SearchTracker from "@/components/SearchTracker";
 
 export const metadata = {
@@ -33,26 +32,16 @@ export default async function DormPage({
   ]);
 
   return (
-    <div className="container-app py-8">
+    <>
       <SearchTracker category="dorm" params={sp} resultsCount={total} />
-      <h1 className="text-2xl font-bold text-ink-900">Dormitories in Songkhla</h1>
-      <p className="mt-1 text-sm text-ink-500">{total} listing{total === 1 ? "" : "s"} found</p>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
-        <PropertyFilterForm districts={districts} universities={universities} params={sp} />
-
-        {properties.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-ink-300 p-12 text-center text-ink-500">
-            No dormitories match your filters yet. Try widening your search.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {properties.map((p, i) => (
-              <PropertyCard key={p.id} property={p} priority={i < 4} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+      <PropertyListingContent
+        kind="dorm"
+        properties={properties}
+        total={total}
+        districts={districts}
+        universities={universities}
+        params={sp}
+      />
+    </>
   );
 }

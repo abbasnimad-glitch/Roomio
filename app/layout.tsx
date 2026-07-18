@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Analytics from "@/components/Analytics";
+import { LanguageProvider } from "@/lib/i18n/LanguageContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -50,12 +51,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={poppins.variable}>
+    <html lang="th" className={poppins.variable}>
       <body className="min-h-screen bg-white font-sans text-ink-900 antialiased">
-        <Analytics />
-        <Header />
-        <main className="min-h-[60vh]">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <Analytics />
+          <Header />
+          <main className="min-h-[60vh]">{children}</main>
+          <Footer />
+        </LanguageProvider>
       </body>
     </html>
   );
