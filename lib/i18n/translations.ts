@@ -103,6 +103,18 @@ export const translations = {
         sun: "วันอาทิตย์",
       },
     },
+    profile: {
+      greeting: "สวัสดีคุณ",
+      subtitle: "จัดการบัญชีและดูสิทธิประโยชน์สมาชิกของคุณ",
+      memberSince: "สมัครสมาชิกเมื่อ",
+      editTitle: "แก้ไขข้อมูลส่วนตัว",
+      changePhoto: "เปลี่ยนรูป",
+      avatarUploadError: "อัปโหลดรูปไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+      lineId: "LINE ID",
+      lineIdPlaceholder: "เช่น your_line_id",
+      facebookUrl: "ลิงก์ Facebook",
+      instagramUrl: "ลิงก์ Instagram",
+    },
   },
   en: {
     nav: {
@@ -205,6 +217,18 @@ export const translations = {
         sat: "Saturday",
         sun: "Sunday",
       },
+    },
+    profile: {
+      greeting: "Hello,",
+      subtitle: "Manage your account and view your membership perks.",
+      memberSince: "Member since",
+      editTitle: "Edit profile",
+      changePhoto: "Change photo",
+      avatarUploadError: "Failed to upload photo. Please try again.",
+      lineId: "LINE ID",
+      lineIdPlaceholder: "e.g. your_line_id",
+      facebookUrl: "Facebook link",
+      instagramUrl: "Instagram link",
     },
   },
 } as const;

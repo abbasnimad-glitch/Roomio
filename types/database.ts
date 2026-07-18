@@ -31,6 +31,7 @@ export interface Profile {
   phone: string | null;
   line_id: string | null;
   facebook_url: string | null;
+  instagram_url: string | null;
   avatar_url: string | null;
   role: UserRole;
   loyalty_points: number;
