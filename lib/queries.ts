@@ -142,19 +142,17 @@ export async function searchProperties(params: PropertySearchParams) {
 }
 
 export const getPropertyBySlug = cache(async (slug: string): Promise<Property | null> => {
+  const decodedSlug = decodeURIComponent(slug);
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("properties")
     .select(PROPERTY_SELECT)
-    .eq("slug", slug)
+    .eq("slug", decodedSlug)
     .eq("status", "approved")
     .single();
-  if (error) {
-    console.error("getPropertyBySlug FAILED. slug=", slug, "error=", JSON.stringify(error));
-    return null;
-  }
+  if (error) return null;
 
-  supabase.rpc("increment_property_view", { property_slug: slug }).then(() => {});
+  supabase.rpc("increment_property_view", { property_slug: decodedSlug }).then(() => {});
 
   return data as unknown as Property;
 });
@@ -283,17 +281,17 @@ export async function getServiceProviders(category?: string, districtId?: number
 }
 
 export const getServiceProviderBySlug = cache(async (slug: string): Promise<ServiceProvider | null> => {
+  const decodedSlug = decodeURIComponent(slug);
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("service_providers")
     .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
-    .eq("slug", slug)
+    .eq("slug", decodedSlug)
     .eq("status", "approved")
     .single();
   if (error) return null;
   return data as unknown as ServiceProvider;
 });
-
 export async function getMyFavorites() {
   const user = await getCurrentUser();
   if (!user) return { properties: [] as Property[], serviceProviders: [] as ServiceProvider[] };
