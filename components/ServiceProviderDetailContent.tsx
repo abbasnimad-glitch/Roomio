@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { Phone, MessageCircle, Clock, MapPin } from "lucide-react";
 import type { ServiceProvider, Review } from "@/types/database";
-import { publicImageUrl, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
+import { isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
 import { getServiceCategoryLabels } from "@/lib/constants";
 import RatingStars from "@/components/RatingStars";
 import FavoriteButton from "@/components/FavoriteButton";
+import PropertyGallery from "@/components/PropertyGallery";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
 import TrackedLink from "@/components/TrackedLink";
@@ -41,17 +41,7 @@ export default function ServiceProviderDetailContent({
 
   return (
     <>
-      <div className="grid gap-2 overflow-hidden rounded-2xl sm:grid-cols-4 sm:grid-rows-2">
-        {images.length > 0 ? (
-          images.slice(0, 5).map((img, i) => (
-            <div key={img.id} className={`relative aspect-square bg-ink-100 ${i === 0 ? "sm:col-span-2 sm:row-span-2 sm:aspect-auto" : ""}`}>
-              <Image src={publicImageUrl("provider-images", img.storage_path)} alt={`${provider.business_name} photo ${i + 1}`} fill sizes="50vw" className="object-cover" priority={i === 0} />
-            </div>
-          ))
-        ) : (
-          <div className="col-span-4 flex aspect-video items-center justify-center bg-ink-100 text-ink-500">{t.service.noPhotos}</div>
-        )}
-      </div>
+      <PropertyGallery images={images} bucket="provider-images" title={provider.business_name} />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>

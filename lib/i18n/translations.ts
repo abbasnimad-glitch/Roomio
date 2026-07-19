@@ -150,6 +150,10 @@ export const translations = {
       lineIdOptionalLabel: "LINE ID (ไม่บังคับ)",
       districtsServedLabel: "อำเภอที่ให้บริการ",
     },
+    gallery: {
+      viewAllPhotos: "ดูรูปทั้งหมด",
+      noPhotos: "ยังไม่มีรูปภาพ",
+    },
   },
   en: {
     nav: {
@@ -299,6 +303,10 @@ export const translations = {
       categoryLabel: "Category",
       lineIdOptionalLabel: "LINE ID (optional)",
       districtsServedLabel: "Districts served",
+    },
+    gallery: {
+      viewAllPhotos: "View all photos",
+      noPhotos: "No photos uploaded yet",
     },
   },
 } as const;

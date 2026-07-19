@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Phone, MessageCircle, Facebook, Wind, Sofa, ParkingCircle, Wifi, Shield, WashingMachine } from "lucide-react";
 import { getPropertyBySlug, getPropertyReviews, getMyReview, getMyProfile } from "@/lib/queries";
 import { formatBaht, publicImageUrl, cn, truncate, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
 import { ROOM_TYPE_LABELS, GENDER_POLICY_LABELS, AVAILABILITY_LABELS, AVAILABILITY_COLORS } from "@/lib/constants";
 import FavoriteButton from "@/components/FavoriteButton";
+import PropertyGallery from "@/components/PropertyGallery";
 import PropertyMap from "@/components/PropertyMapLazy";
 import ShareButton from "@/components/ShareButton";
 import RatingStars from "@/components/RatingStars";
@@ -111,33 +111,8 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      {/* Gallery */}
-<div className={cn("grid gap-2 overflow-hidden rounded-2xl", images.length > 1 && "sm:grid-cols-4 sm:grid-rows-2")}>
-  {images.length > 0 ? (
-    images.slice(0, 5).map((img, i) => (
-      <div
-        key={img.id}
-        className={cn(
-          "relative aspect-video bg-ink-100",
-          images.length > 1 && i === 0 && "sm:col-span-2 sm:row-span-2 sm:aspect-auto"
-        )}
-      >
-        <Image
-          src={publicImageUrl("property-images", img.storage_path)}
-          alt={`${property.name} photo ${i + 1}`}
-          fill
-          sizes="50vw"
-          className="object-cover"
-          priority={i === 0}
-        />
-      </div>
-    ))
-  ) : (
-    <div className="flex aspect-video items-center justify-center bg-ink-100 text-ink-500">
-      No photos uploaded yet
-    </div>
-  )}
-</div>
+
+      <PropertyGallery images={images} bucket="property-images" title={property.name} />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
