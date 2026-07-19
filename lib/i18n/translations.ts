@@ -114,6 +114,8 @@ export const translations = {
       lineIdPlaceholder: "เช่น your_line_id",
       facebookUrl: "ลิงก์ Facebook",
       instagramUrl: "ลิงก์ Instagram",
+      displayNameLabel: "ชื่อเล่น หรือ ชื่อที่แสดง",
+      displayNamePlaceholder: "เช่น พี่บาส หรือ หอพักมนตรา",
     },
   },
   en: {
@@ -229,6 +231,8 @@ export const translations = {
       lineIdPlaceholder: "e.g. your_line_id",
       facebookUrl: "Facebook link",
       instagramUrl: "Instagram link",
+      displayNameLabel: "Nickname or display name",
+      displayNamePlaceholder: "e.g. Bas or Montra Dormitory",
     },
   },
 } as const;
