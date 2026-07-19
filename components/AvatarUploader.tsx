@@ -19,7 +19,6 @@ export default function AvatarUploader({
   const [supabase] = useState(() => createClient());
   const [avatarPath, setAvatarPath] = useState<string | null>(initialAvatarUrl);
   const [uploading, setUploading] = useState(false);
-  const [version, setVersion] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -30,18 +29,28 @@ export default function AvatarUploader({
     setError(null);
     setUploading(true);
     try {
-      // Fixed filename (no extension) so every re-upload overwrites the same
-      // storage object via upsert, regardless of source file type — avoids
-      // orphaned files piling up in the bucket from repeated changes.
-      const path = `${userId}/profile`;
-      const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      // A unique filename per upload (instead of overwriting a fixed path)
+      // means the public URL genuinely changes every time, so browsers and
+      // any CDN in front of Supabase Storage always fetch the new image
+      // instead of serving a stale cached copy at an unchanged URL.
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const newPath = `${userId}/${crypto.randomUUID()}.${ext}`;
+      const previousPath = avatarPath;
+
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(newPath, file);
       if (uploadError) throw uploadError;
 
-      const result = await updateMyAvatar(path);
+      const result = await updateMyAvatar(newPath);
       if (!result.success) throw new Error(result.message);
 
-      setAvatarPath(path);
-      setVersion((v) => v + 1);
+      setAvatarPath(newPath);
+
+      // Best-effort cleanup of the old file — if it fails (e.g. it never
+      // existed, or a race with another upload), the profile still points
+      // at the new image, so this is safe to ignore.
+      if (previousPath) {
+        supabase.storage.from("avatars").remove([previousPath]).catch(() => {});
+      }
     } catch {
       setError(t.profile.avatarUploadError);
     } finally {
@@ -50,7 +59,7 @@ export default function AvatarUploader({
     }
   }
 
-  const src = avatarPath ? `${publicImageUrl("avatars", avatarPath)}?v=${version}` : null;
+  const src = avatarPath ? publicImageUrl("avatars", avatarPath) : null;
 
   return (
     <div>
