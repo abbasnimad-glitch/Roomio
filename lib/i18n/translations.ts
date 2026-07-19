@@ -12,6 +12,7 @@ export const translations = {
       messages: "ข้อความ",
       notifications: "การแจ้งเตือน",
       profile: "โปรไฟล์",
+      dashboard: "แดชบอร์ด",
       logout: "ออกจากระบบ",
     },
     home: {
@@ -129,6 +130,7 @@ export const translations = {
       messages: "Messages",
       notifications: "Notifications",
       profile: "Profile",
+      dashboard: "Dashboard",
       logout: "Log out",
     },
     home: {
