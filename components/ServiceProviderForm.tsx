@@ -3,8 +3,10 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { ServiceProvider, District, ServiceCategory } from "@/types/database";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/constants";
+import { getServiceCategoryLabels } from "@/lib/constants";
 import type { ActionResult } from "@/lib/actions/provider";
+import PropertyLocationPicker, { DEFAULT_LAT, DEFAULT_LNG } from "@/components/PropertyLocationPicker";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function ServiceProviderForm({
   mode,
@@ -18,8 +20,15 @@ export default function ServiceProviderForm({
   action: (formData: FormData) => Promise<ActionResult & { providerId?: string }>;
 }) {
   const router = useRouter();
+  const { t, locale } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
+  const [coords, setCoords] = useState({
+    lat: provider?.lat ?? DEFAULT_LAT,
+    lng: provider?.lng ?? DEFAULT_LNG,
+  });
+
+  const serviceCategoryLabels = getServiceCategoryLabels(locale);
 
   function handleSubmit(formData: FormData) {
     setMessage(null);
@@ -38,25 +47,25 @@ export default function ServiceProviderForm({
     <form action={handleSubmit} className="flex flex-col gap-5 rounded-2xl border border-ink-100 p-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-xs font-semibold text-ink-700">Business name</label>
+          <label className="text-xs font-semibold text-ink-700">{t.listingForm.businessNameLabel}</label>
           <input
             name="business_name"
             required
             defaultValue={provider?.business_name}
-            placeholder="e.g. Somchai Electrical Repair"
+            placeholder={t.listingForm.businessNamePlaceholder}
             className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-ink-700">Category</label>
+          <label className="text-xs font-semibold text-ink-700">{t.listingForm.categoryLabel}</label>
           <select
             name="category"
             defaultValue={provider?.category ?? "electrician"}
             className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
           >
-            {(Object.keys(SERVICE_CATEGORY_LABELS) as ServiceCategory[]).map((c) => (
+            {(Object.keys(serviceCategoryLabels) as ServiceCategory[]).map((c) => (
               <option key={c} value={c}>
-                {SERVICE_CATEGORY_LABELS[c]}
+                {serviceCategoryLabels[c]}
               </option>
             ))}
           </select>
@@ -64,19 +73,19 @@ export default function ServiceProviderForm({
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-ink-700">Description</label>
+        <label className="text-xs font-semibold text-ink-700">{t.listingForm.descriptionLabel}</label>
         <textarea
           name="description"
           rows={4}
           defaultValue={provider?.description}
-          placeholder="Describe your services, experience, specialties..."
+          placeholder={t.listingForm.descriptionPlaceholderProvider}
           className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="text-xs font-semibold text-ink-700">Phone</label>
+          <label className="text-xs font-semibold text-ink-700">{t.auth.phone}</label>
           <input
             name="phone"
             type="tel"
@@ -87,7 +96,7 @@ export default function ServiceProviderForm({
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-ink-700">LINE ID (optional)</label>
+          <label className="text-xs font-semibold text-ink-700">{t.listingForm.lineIdOptionalLabel}</label>
           <input
             name="line_id"
             defaultValue={provider?.line_id ?? ""}
@@ -96,33 +105,21 @@ export default function ServiceProviderForm({
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="text-xs font-semibold text-ink-700">Latitude (optional)</label>
-          <input
-            name="lat"
-            type="number"
-            step="any"
-            defaultValue={provider?.lat ?? ""}
-            placeholder="7.0086"
-            className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
+      <div>
+        <label className="text-xs font-semibold text-ink-700">{t.listingForm.locationOnMapLabel}</label>
+        <div className="mt-1">
+          <PropertyLocationPicker
+            lat={coords.lat}
+            lng={coords.lng}
+            onChange={(lat, lng) => setCoords({ lat, lng })}
           />
         </div>
-        <div>
-          <label className="text-xs font-semibold text-ink-700">Longitude (optional)</label>
-          <input
-            name="lng"
-            type="number"
-            step="any"
-            defaultValue={provider?.lng ?? ""}
-            placeholder="100.4977"
-            className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
-          />
-        </div>
+        <input type="hidden" name="lat" value={coords.lat} />
+        <input type="hidden" name="lng" value={coords.lng} />
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-ink-700">Districts served</label>
+        <label className="text-xs font-semibold text-ink-700">{t.listingForm.districtsServedLabel}</label>
         <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
           {districts.map((d) => (
             <label key={d.id} className="flex items-center gap-2 text-sm text-ink-700">
@@ -133,7 +130,7 @@ export default function ServiceProviderForm({
                 defaultChecked={provider?.working_districts?.includes(d.id) ?? false}
                 className="rounded"
               />
-              {d.name_en}
+              {localizedName(locale, d.name_th, d.name_en)}
             </label>
           ))}
         </div>
@@ -144,7 +141,7 @@ export default function ServiceProviderForm({
         disabled={isPending}
         className="self-start rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-60 focus-ring"
       >
-        {isPending ? "กำลังบันทึก…" : mode === "create" ? "สร้างประกาศ" : "บันทึกการแก้ไข"}
+        {isPending ? t.listingForm.saving : mode === "create" ? t.listingForm.createListing : t.listingForm.saveChanges}
       </button>
 
       {message && <p className={message.ok ? "text-sm text-secondary-600" : "text-sm text-red-600"}>{message.text}</p>}
