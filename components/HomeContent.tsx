@@ -3,22 +3,15 @@
 import { Building2, Home as HomeIcon, Wrench } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import CategoryCard from "@/components/CategoryCard";
-import PropertyCard from "@/components/PropertyCard";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
-import type { Property, District, University } from "@/types/database";
+import type { District, University } from "@/types/database";
 
 export default function HomeContent({
   districts,
   universities,
-  latest,
-  popular,
-  availableNow,
 }: {
   districts: District[];
   universities: University[];
-  latest: Property[];
-  popular: Property[];
-  availableNow: Property[];
 }) {
   const { t } = useLanguage();
 
@@ -64,58 +57,6 @@ export default function HomeContent({
           />
         </div>
       </section>
-
-      <ListingSection
-        title={t.home.latestListings}
-        seeAllLabel={t.home.seeAll}
-        properties={latest}
-        seeAllHref="/dorm?sort=newest"
-        prioritizeImages
-      />
-      <ListingSection
-        title={t.home.popularListings}
-        seeAllLabel={t.home.seeAll}
-        properties={popular}
-        seeAllHref="/dorm?sort=popular"
-      />
-      <ListingSection
-        title={t.home.availableNow}
-        seeAllLabel={t.home.seeAll}
-        properties={availableNow}
-        seeAllHref="/dorm?available=true"
-      />
     </div>
-  );
-}
-
-function ListingSection({
-  title,
-  seeAllLabel,
-  properties,
-  seeAllHref,
-  prioritizeImages = false,
-}: {
-  title: string;
-  seeAllLabel: string;
-  properties: Property[];
-  seeAllHref: string;
-  prioritizeImages?: boolean;
-}) {
-  if (properties.length === 0) return null;
-
-  return (
-    <section className="container-app py-8">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-ink-900">{title}</h2>
-        <a href={seeAllHref} className="text-sm font-medium text-primary-600 hover:underline">
-          {seeAllLabel}
-        </a>
-      </div>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {properties.map((p, i) => (
-          <PropertyCard key={p.id} property={p} priority={prioritizeImages && i < 4} />
-        ))}
-      </div>
-    </section>
   );
 }
