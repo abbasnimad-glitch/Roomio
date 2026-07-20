@@ -1,11 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import { MessageCircle } from "lucide-react";
 import { getMyProfile, getBoostPaymentById } from "@/lib/queries";
-import { BOOST_PLAN } from "@/lib/constants";
+import { BOOST_PLAN, BOOST_CONTACT_LINK } from "@/lib/constants";
 import { formatBaht } from "@/lib/utils";
-import BoostPaymentMethodPicker from "@/components/BoostPaymentMethodPicker";
 
-export const metadata = { title: "ชำระเงินดันประกาศ" };
+export const metadata = { title: "ดันประกาศ" };
 
 export default async function BoostPaymentPage({ params }: { params: Promise<{ paymentId: string }> }) {
   const { paymentId } = await params;
@@ -21,7 +21,7 @@ export default async function BoostPaymentPage({ params }: { params: Promise<{ p
 
   return (
     <div className="container-app max-w-md py-12">
-      <h1 className="text-2xl font-bold text-ink-900">ชำระเงินเพื่อดันประกาศ</h1>
+      <h1 className="text-2xl font-bold text-ink-900">ดันประกาศ</h1>
       <p className="mt-1 text-sm text-ink-500">{payment.property?.name}</p>
 
       <div className="mt-6 rounded-2xl border border-ink-100 p-5">
@@ -35,8 +35,20 @@ export default async function BoostPaymentPage({ params }: { params: Promise<{ p
         </div>
       </div>
 
-      <div className="mt-6">
-        <BoostPaymentMethodPicker paymentId={payment.id} propertyId={payment.property_id} initialMethod={payment.payment_method} />
+      <div className="mt-6 rounded-2xl border border-ink-100 p-5 text-center">
+        <p className="text-sm text-ink-700">
+          ขณะนี้การชำระเงินดันประกาศดำเนินการผ่านแอดมินโดยตรง กรุณาติดต่อทีมงานผ่าน Facebook Messenger
+          เพื่อแจ้งความประสงค์และดำเนินการชำระเงิน ทีมงานจะดันประกาศให้หลังยืนยันการชำระเงินเรียบร้อยแล้ว
+        </p>
+        <a
+          href={BOOST_CONTACT_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 focus-ring"
+        >
+          <MessageCircle className="h-4 w-4" />
+          ติดต่อทาง Messenger
+        </a>
       </div>
 
       <Link href="/dashboard/owner" className="mt-6 inline-block text-sm text-ink-500 hover:underline">

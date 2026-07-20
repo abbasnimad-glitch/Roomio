@@ -191,3 +191,9 @@ export const BOOST_PLAN = {
   days: 7,
   priceTHB: 100,
 } as const;
+// Manual contact channel for Boost/Premium payments while the in-app
+// payment UI (Stripe/PromptPay QR) is disabled — real payment requests
+// now happen entirely off this deployment via Messenger, with the admin
+// manually activating the boost through BoostControl after confirming.
+// Update this one constant if the Facebook Page changes.
+export const BOOST_CONTACT_LINK = "https://m.me/61591871262085";
