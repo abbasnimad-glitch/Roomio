@@ -66,8 +66,6 @@ function LoginForm() {
       setError(translateAuthError(error.message));
       setOauthLoading(null);
     }
-    // On success, Supabase redirects the browser away to the provider —
-    // no further action needed here.
   }
 
   return (
@@ -75,34 +73,7 @@ function LoginForm() {
       <div className="w-full max-w-sm rounded-2xl border border-ink-100 p-8 shadow-card">
         <h1 className="text-xl font-bold text-ink-900">เข้าสู่ระบบ Roomio</h1>
 
-        <div className="mt-6 flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => handleOAuth("google")}
-            disabled={oauthLoading !== null}
-            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
-          >
-            <GoogleIcon />
-            {oauthLoading === "google" ? "กำลังเชื่อมต่อ…" : "เข้าสู่ระบบด้วย Google"}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleOAuth("facebook")}
-            disabled={oauthLoading !== null}
-            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
-          >
-            <FacebookIcon />
-            {oauthLoading === "facebook" ? "กำลังเชื่อมต่อ…" : "เข้าสู่ระบบด้วย Facebook"}
-          </button>
-        </div>
-
-        <div className="mt-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-ink-100" />
-          <span className="text-xs text-ink-400">หรือ</span>
-          <div className="h-px flex-1 bg-ink-100" />
-        </div>
-
-        <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
             <label className="text-xs font-semibold text-ink-700">อีเมล</label>
             <input
@@ -137,6 +108,34 @@ function LoginForm() {
             {loading ? "กำลังเข้าสู่ระบบ…" : "เข้าสู่ระบบ"}
           </button>
         </form>
+
+        <div className="mt-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-ink-100" />
+          <span className="text-xs text-ink-400">หรือ</span>
+          <div className="h-px flex-1 bg-ink-100" />
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => handleOAuth("google")}
+            disabled={oauthLoading !== null}
+            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
+          >
+            <GoogleIcon />
+            {oauthLoading === "google" ? "กำลังเชื่อมต่อ…" : "เข้าสู่ระบบด้วย Google"}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuth("facebook")}
+            disabled={oauthLoading !== null}
+            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
+          >
+            <FacebookIcon />
+            {oauthLoading === "facebook" ? "กำลังเชื่อมต่อ…" : "เข้าสู่ระบบด้วย Facebook"}
+          </button>
+        </div>
+
         <p className="mt-4 text-center text-sm text-ink-500">
           ยังไม่มีบัญชี? <Link href="/auth/register" className="font-medium text-primary-600">สมัครสมาชิก</Link>
         </p>

@@ -100,54 +100,7 @@ function RegisterForm() {
       <div className="w-full max-w-sm rounded-2xl border border-ink-100 p-8 shadow-card">
         <h1 className="text-xl font-bold text-ink-900">สมัครสมาชิก Roomio</h1>
 
-        <label className="mt-5 flex items-start gap-2 text-xs text-ink-600">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 rounded"
-          />
-          <span>
-            ฉันได้อ่านและยอมรับ{" "}
-            <Link href="/terms" target="_blank" className="font-medium text-primary-600 underline">
-              ข้อตกลงการใช้งาน
-            </Link>{" "}
-            และ{" "}
-            <Link href="/privacy" target="_blank" className="font-medium text-primary-600 underline">
-              นโยบายความเป็นส่วนตัว
-            </Link>{" "}
-            ของ Roomio
-          </span>
-        </label>
-
-        <div className="mt-4 flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => handleOAuth("google")}
-            disabled={oauthLoading !== null || !agreed}
-            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
-          >
-            <GoogleIcon />
-            {oauthLoading === "google" ? "กำลังเชื่อมต่อ…" : "สมัครสมาชิกด้วย Google"}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleOAuth("facebook")}
-            disabled={oauthLoading !== null || !agreed}
-            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
-          >
-            <FacebookIcon />
-            {oauthLoading === "facebook" ? "กำลังเชื่อมต่อ…" : "สมัครสมาชิกด้วย Facebook"}
-          </button>
-        </div>
-
-        <div className="mt-5 flex items-center gap-3">
-          <div className="h-px flex-1 bg-ink-100" />
-          <span className="text-xs text-ink-400">หรือ</span>
-          <div className="h-px flex-1 bg-ink-100" />
-        </div>
-
-        <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
           <div>
             <label className="text-xs font-semibold text-ink-700">สมัครในฐานะ</label>
             <div className="mt-1 grid grid-cols-3 gap-1.5">
@@ -217,6 +170,26 @@ function RegisterForm() {
             <p className="mt-1 text-[11px] text-ink-400">อย่างน้อย 8 ตัวอักษร</p>
           </div>
 
+          <label className="flex items-start gap-2 text-xs text-ink-600">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 rounded"
+            />
+            <span>
+              ฉันได้อ่านและยอมรับ{" "}
+              <Link href="/terms" target="_blank" className="font-medium text-primary-600 underline">
+                ข้อตกลงการใช้งาน
+              </Link>{" "}
+              และ{" "}
+              <Link href="/privacy" target="_blank" className="font-medium text-primary-600 underline">
+                นโยบายความเป็นส่วนตัว
+              </Link>{" "}
+              ของ Roomio
+            </span>
+          </label>
+
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
@@ -226,6 +199,37 @@ function RegisterForm() {
             {loading ? "กำลังสร้างบัญชี…" : "สมัครสมาชิก"}
           </button>
         </form>
+
+        <div className="mt-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-ink-100" />
+          <span className="text-xs text-ink-400">หรือ</span>
+          <div className="h-px flex-1 bg-ink-100" />
+        </div>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => handleOAuth("google")}
+            disabled={oauthLoading !== null || !agreed}
+            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
+          >
+            <GoogleIcon />
+            {oauthLoading === "google" ? "กำลังเชื่อมต่อ…" : "สมัครสมาชิกด้วย Google"}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOAuth("facebook")}
+            disabled={oauthLoading !== null || !agreed}
+            className="flex items-center justify-center gap-2 rounded-full border border-ink-300 px-4 py-2.5 text-sm font-medium text-ink-900 hover:bg-ink-100 disabled:opacity-60 focus-ring"
+          >
+            <FacebookIcon />
+            {oauthLoading === "facebook" ? "กำลังเชื่อมต่อ…" : "สมัครสมาชิกด้วย Facebook"}
+          </button>
+        </div>
+        {!agreed && (
+          <p className="mt-2 text-center text-[11px] text-ink-400">กรุณาติ๊กยอมรับข้อตกลงก่อนสมัครด้วย Google/Facebook</p>
+        )}
+
         <p className="mt-4 text-center text-sm text-ink-500">
           มีบัญชีอยู่แล้ว? <Link href="/auth/login" className="font-medium text-primary-600">เข้าสู่ระบบ</Link>
         </p>
