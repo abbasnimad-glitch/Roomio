@@ -19,12 +19,14 @@ function RegisterForm() {
   const [role, setRole] = useState<SignupRole>(
     ["user", "owner", "service_provider"].includes(initialRole) ? initialRole : "user"
   );
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!agreed) return;
     setLoading(true);
     setError(null);
     const supabase = createClient();
@@ -128,10 +130,32 @@ function RegisterForm() {
             />
             <p className="mt-1 text-[11px] text-ink-400">อย่างน้อย 8 ตัวอักษร</p>
           </div>
+
+          <label className="flex items-start gap-2 text-xs text-ink-600">
+            <input
+              type="checkbox"
+              required
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 rounded"
+            />
+            <span>
+              ฉันได้อ่านและยอมรับ{" "}
+              <Link href="/terms" target="_blank" className="font-medium text-primary-600 underline">
+                ข้อตกลงการใช้งาน
+              </Link>{" "}
+              และ{" "}
+              <Link href="/privacy" target="_blank" className="font-medium text-primary-600 underline">
+                นโยบายความเป็นส่วนตัว
+              </Link>{" "}
+              ของ Roomio
+            </span>
+          </label>
+
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !agreed}
             className="rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-600 disabled:opacity-60 focus-ring"
           >
             {loading ? "กำลังสร้างบัญชี…" : "สมัครสมาชิก"}
