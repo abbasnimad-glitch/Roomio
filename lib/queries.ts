@@ -293,7 +293,7 @@ export const getServiceProviderBySlug = cache(async (slug: string): Promise<Serv
   // listing through this same public-facing page.
   const { data, error } = await supabase
     .from("service_providers")
-    .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
+    .select("*, images:service_provider_images(*), owner:profiles!left(full_name, is_verified)")
     .eq("slug", decodedSlug)
     .single();
   if (error) return null;

@@ -143,7 +143,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
                   className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:underline"
                 >
                   <UserIcon className="h-3.5 w-3.5" />
-                  ลงประกาศโดย {property.owner.full_name}
+                  {property.owner.full_name}
                 </Link>
               )}
             </div>

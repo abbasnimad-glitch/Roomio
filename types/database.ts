@@ -140,7 +140,7 @@ export interface ServiceProvider {
   created_at: string;
   updated_at: string;
   images?: { id: string; storage_path: string; sort_order: number }[];
-  owner?: { is_verified: boolean };
+  owner?: { full_name: string; is_verified: boolean };
 }
 
 export interface Notification {

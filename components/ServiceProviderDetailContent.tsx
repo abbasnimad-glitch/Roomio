@@ -73,7 +73,7 @@ export default function ServiceProviderDetailContent({
                   className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-ink-600 hover:underline"
                 >
                   <UserIcon className="h-3.5 w-3.5" />
-                  {locale === "th" ? "ดูโปรไฟล์ผู้ให้บริการ" : "View provider profile"}
+                  {provider.owner?.full_name ?? (locale === "th" ? "ดูโปรไฟล์ผู้ให้บริการ" : "View provider profile")}
                 </Link>
               )}
             </div>
