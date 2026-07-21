@@ -1,7 +1,6 @@
-import { getServiceProviders, getDistricts } from "@/lib/queries";
+import { getServiceProviders, getDistricts, getServiceCategories } from "@/lib/queries";
 import SearchTracker from "@/components/SearchTracker";
 import ServicesContent from "@/components/ServicesContent";
-import type { ServiceCategory } from "@/types/database";
 
 export const metadata = {
   title: "Local Services in Songkhla",
@@ -15,12 +14,13 @@ export default async function ServicesPage({
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const sp = await searchParams;
-  const category = sp.category as ServiceCategory | undefined;
+  const categoryId = sp.category ? Number(sp.category) : undefined;
   const districtId = sp.district ? Number(sp.district) : undefined;
 
-  const [providers, districts] = await Promise.all([
-    getServiceProviders(category, districtId),
+  const [providers, districts, categories] = await Promise.all([
+    getServiceProviders(categoryId, districtId),
     getDistricts(),
+    getServiceCategories(),
   ]);
 
   return (
@@ -30,7 +30,13 @@ export default async function ServicesPage({
         params={{ category: sp.category, district: sp.district }}
         resultsCount={providers.length}
       />
-      <ServicesContent providers={providers} districts={districts} category={category} districtId={districtId} />
+      <ServicesContent
+        providers={providers}
+        districts={districts}
+        categories={categories}
+        categoryId={categoryId}
+        districtId={districtId}
+      />
     </>
   );
 }

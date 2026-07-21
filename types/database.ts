@@ -10,12 +10,6 @@ export type RoomType =
 export type GenderPolicy = "any" | "male_only" | "female_only";
 export type AvailabilityStatus = "available" | "almost_full" | "full";
 export type ListingStatus = "pending" | "approved" | "rejected" | "archived";
-export type ServiceCategory =
-  | "electrician"
-  | "aircon_repair"
-  | "appliance_repair"
-  | "plumber"
-  | "general_technician";
 export type MessageStatus = "unread" | "read";
 export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded";
 export type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled" | "expired";
@@ -49,7 +43,14 @@ export interface LoyaltyTransaction {
   created_by: string | null;
   created_at: string;
 }
-
+export interface ServiceCategoryRow {
+  id: number;
+  key: string;
+  name_th: string;
+  name_en: string;
+  icon: string;
+  sort_order: number;
+}
 export interface District {
   id: number;
   name_th: string;
@@ -120,7 +121,8 @@ export interface ServiceProvider {
   owner_id: string;
   business_name: string;
   slug: string;
-  category: ServiceCategory;
+  category_id: number;
+  category?: ServiceCategoryRow;
   description: string;
   phone: string;
   line_id: string | null;

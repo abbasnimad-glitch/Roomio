@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getDistricts, getProviderListingById, getMyProfile } from "@/lib/queries";
+import { getDistricts, getProviderListingById, getMyProfile, getServiceCategories } from "@/lib/queries";
 import { updateServiceProvider, deleteServiceProvider } from "@/lib/actions/provider";
 import ServiceProviderForm from "@/components/ServiceProviderForm";
 import PropertyImageManager from "@/components/PropertyImageManager";
@@ -16,13 +16,12 @@ export default async function EditServiceProviderPage({
 }) {
   const { id } = await params;
   const { created } = await searchParams;
-
-  const [profile, provider, districts] = await Promise.all([
+  const [profile, provider, districts, categories] = await Promise.all([
     getMyProfile(),
     getProviderListingById(id),
     getDistricts(),
+    getServiceCategories(),
   ]);
-
   if (!provider) notFound();
   if (!profile || (provider.owner_id !== profile.id && profile.role !== "admin")) notFound();
 
@@ -35,7 +34,6 @@ export default async function EditServiceProviderPage({
           เพิ่มประกาศเรียบร้อยแล้ว รอแอดมินตรวจสอบ — คุณสามารถเพิ่มรูปภาพและแก้ไขรายละเอียดเพิ่มเติมได้ที่นี่
         </p>
       )}
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-ink-900">แก้ไขประกาศ</h1>
@@ -49,7 +47,6 @@ export default async function EditServiceProviderPage({
           confirmLabel={`ลบประกาศ "${provider.business_name}" ใช่หรือไม่? การลบไม่สามารถย้อนกลับได้`}
         />
       </div>
-
       <section className="mt-6">
         <h2 className="text-sm font-semibold text-ink-900">รูปภาพ</h2>
         <div className="mt-2">
@@ -62,9 +59,8 @@ export default async function EditServiceProviderPage({
           />
         </div>
       </section>
-
       <section className="mt-6">
-        <ServiceProviderForm mode="edit" provider={provider} districts={districts} action={boundUpdate} />
+        <ServiceProviderForm mode="edit" provider={provider} districts={districts} categories={categories} action={boundUpdate} />
       </section>
     </div>
   );

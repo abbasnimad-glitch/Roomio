@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getServiceProviderBySlug, getServiceProviderReviews, getMyReview, getMyProfile } from "@/lib/queries";
 import { publicImageUrl, truncate } from "@/lib/utils";
-import { SERVICE_CATEGORY_LABELS } from "@/lib/constants";
 import ServiceProviderDetailContent from "@/components/ServiceProviderDetailContent";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -10,7 +9,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const provider = await getServiceProviderBySlug(slug);
   if (!provider) return {};
 
-  const category = SERVICE_CATEGORY_LABELS[provider.category];
+  const category = provider.category?.name_en ?? "Service";
   const title = `${provider.business_name} — ${category} in Songkhla`;
   const description = truncate(
     provider.description?.trim() || `${category} serving ${provider.working_districts.length} district(s) in Songkhla Province.`,

@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/actions/auth-helpers";
-import type { ServiceCategory } from "@/types/database";
 
 export interface ActionResult {
   success: boolean;
@@ -33,7 +32,7 @@ function readProviderFields(formData: FormData) {
 
   return {
     business_name: String(formData.get("business_name") ?? "").trim(),
-    category: String(formData.get("category") ?? "electrician") as ServiceCategory,
+    category_id: Number(formData.get("category_id") ?? 0),
     description: String(formData.get("description") ?? "").trim(),
     phone: String(formData.get("phone") ?? "").trim(),
     line_id: String(formData.get("line_id") ?? "").trim() || null,
@@ -45,6 +44,7 @@ function readProviderFields(formData: FormData) {
 
 function validateProviderFields(fields: ReturnType<typeof readProviderFields>): string | null {
   if (!fields.business_name) return "กรุณากรอกชื่อร้าน/ผู้ให้บริการ";
+  if (!fields.category_id || fields.category_id <= 0) return "กรุณาเลือกหมวดหมู่บริการ";
   if (!fields.phone) return "กรุณากรอกเบอร์โทรศัพท์";
   if (fields.working_districts.length === 0) return "กรุณาเลือกอำเภอที่ให้บริการอย่างน้อย 1 แห่ง";
   return null;

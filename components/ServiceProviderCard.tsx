@@ -5,17 +5,15 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import type { ServiceProvider } from "@/types/database";
 import { publicImageUrl, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
-import { getServiceCategoryLabels } from "@/lib/constants";
 import RatingStars from "@/components/RatingStars";
 import FavoriteButton from "@/components/FavoriteButton";
 import FeaturedBadge from "@/components/FeaturedBadge";
 import BoostBadge from "@/components/BoostBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 export default function ServiceProviderCard({ provider, priority = false }: { provider: ServiceProvider; priority?: boolean }) {
   const { t, locale } = useLanguage();
-  const serviceCategoryLabels = getServiceCategoryLabels(locale);
   const cover = provider.images?.[0];
   const imageUrl = cover ? publicImageUrl("provider-images", cover.storage_path) : null;
   const districtsCount = provider.working_districts.length;
@@ -24,6 +22,8 @@ export default function ServiceProviderCard({ provider, priority = false }: { pr
     locale === "th"
       ? `${t.service.servesPrefix} ${districtsCount} ${t.service.servesSuffix}`
       : `${t.service.servesPrefix} ${districtsCount} district${districtsCount === 1 ? "" : "s"} in Songkhla`;
+
+  const categoryLabel = provider.category ? localizedName(locale, provider.category.name_th, provider.category.name_en) : "";
 
   return (
     <Link
@@ -43,9 +43,11 @@ export default function ServiceProviderCard({ provider, priority = false }: { pr
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm text-ink-500">No photo yet</div>
         )}
-        <span className="absolute left-3 top-3 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600">
-          {serviceCategoryLabels[provider.category]}
-        </span>
+        {categoryLabel && (
+          <span className="absolute left-3 top-3 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-600">
+            {categoryLabel}
+          </span>
+        )}
         <div className="absolute right-3 top-3">
           <FavoriteButton serviceProviderId={provider.id} />
         </div>

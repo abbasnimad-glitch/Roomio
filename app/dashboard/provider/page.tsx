@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Wrench, ClipboardCheck, CheckCircle2, Star, Plus, MessageCircle } from "lucide-react";
 import { getProviderListings, getProviderStats } from "@/lib/queries";
 import { cn, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
-import { SERVICE_CATEGORY_LABELS, LISTING_STATUS_LABELS, LISTING_STATUS_COLORS } from "@/lib/constants";
+import { LISTING_STATUS_LABELS, LISTING_STATUS_COLORS } from "@/lib/constants";
 import ServiceAvailabilityToggle from "@/components/ServiceAvailabilityToggle";
 import DeletePropertyButton from "@/components/DeletePropertyButton";
 import FeaturedBadge from "@/components/FeaturedBadge";
@@ -61,7 +61,6 @@ export default async function ProviderDashboardPage() {
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold text-ink-900">ประกาศของฉัน</h2>
-
         {listings.length === 0 ? (
           <div className="mt-3 rounded-2xl border border-dashed border-ink-300 p-12 text-center text-ink-500">
             คุณยังไม่มีประกาศ เริ่มเพิ่มบริการแรกของคุณได้เลย
@@ -80,7 +79,7 @@ export default async function ProviderDashboardPage() {
                     {isCurrentlyFeatured(p.is_featured, p.featured_until) && <FeaturedBadge />}
                   </div>
                   <p className="mt-1 text-xs text-ink-500">
-                    {SERVICE_CATEGORY_LABELS[p.category]} · ให้บริการ {p.working_districts.length} อำเภอ · คะแนน {p.rating_avg.toFixed(1)} ({p.rating_count})
+                    {p.category?.name_th ?? "—"} · ให้บริการ {p.working_districts.length} อำเภอ · คะแนน {p.rating_avg.toFixed(1)} ({p.rating_count})
                     {isCurrentlyFeatured(p.is_featured, p.featured_until) && p.featured_until && (
                       <> · แนะนำถึง {new Date(p.featured_until).toLocaleDateString("th-TH")}</>
                     )}
@@ -89,9 +88,7 @@ export default async function ProviderDashboardPage() {
                     )}
                   </p>
                 </div>
-
                 <ServiceAvailabilityToggle providerId={p.id} currentIsAvailable={p.is_available} />
-
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/dashboard/provider/${p.id}/edit`}

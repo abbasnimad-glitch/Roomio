@@ -2,8 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { ServiceProvider, District, ServiceCategory } from "@/types/database";
-import { getServiceCategoryLabels } from "@/lib/constants";
+import type { ServiceProvider, District, ServiceCategoryRow } from "@/types/database";
 import type { ActionResult } from "@/lib/actions/provider";
 import PropertyLocationPicker, { DEFAULT_LAT, DEFAULT_LNG } from "@/components/PropertyLocationPicker";
 import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
@@ -12,11 +11,13 @@ export default function ServiceProviderForm({
   mode,
   provider,
   districts,
+  categories,
   action,
 }: {
   mode: "create" | "edit";
   provider?: ServiceProvider;
   districts: District[];
+  categories: ServiceCategoryRow[];
   action: (formData: FormData) => Promise<ActionResult & { providerId?: string }>;
 }) {
   const router = useRouter();
@@ -27,8 +28,6 @@ export default function ServiceProviderForm({
     lat: provider?.lat ?? DEFAULT_LAT,
     lng: provider?.lng ?? DEFAULT_LNG,
   });
-
-  const serviceCategoryLabels = getServiceCategoryLabels(locale);
 
   function handleSubmit(formData: FormData) {
     setMessage(null);
@@ -59,13 +58,14 @@ export default function ServiceProviderForm({
         <div>
           <label className="text-xs font-semibold text-ink-700">{t.listingForm.categoryLabel}</label>
           <select
-            name="category"
-            defaultValue={provider?.category ?? "electrician"}
+            name="category_id"
+            required
+            defaultValue={provider?.category_id ?? categories[0]?.id ?? ""}
             className="mt-1 w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus-ring"
           >
-            {(Object.keys(serviceCategoryLabels) as ServiceCategory[]).map((c) => (
-              <option key={c} value={c}>
-                {serviceCategoryLabels[c]}
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {localizedName(locale, c.name_th, c.name_en)}
               </option>
             ))}
           </select>

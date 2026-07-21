@@ -1,10 +1,6 @@
 import { getAdminReports } from "@/lib/queries";
-import {
-  LISTING_STATUS_LABELS,
-  PROPERTY_TYPE_LABELS,
-  SERVICE_CATEGORY_LABELS,
-} from "@/lib/constants";
-import type { ListingStatus, PropertyType, ServiceCategory, UserRole } from "@/types/database";
+import { LISTING_STATUS_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/constants";
+import type { ListingStatus, PropertyType, UserRole } from "@/types/database";
 
 export const metadata = { title: "รายงาน — Admin" };
 
@@ -46,15 +42,9 @@ export default async function AdminReportsPage() {
             count: report.providersByStatus[s] ?? 0,
           }))}
         />
+        <ReportTable title="ผู้ให้บริการตามหมวดหมู่" rows={report.providersByCategory} />
         <ReportTable
-          title="ผู้ให้บริการตามหมวดหมู่"
-          rows={(Object.keys(SERVICE_CATEGORY_LABELS) as ServiceCategory[]).map((c) => ({
-            label: SERVICE_CATEGORY_LABELS[c],
-            count: report.providersByCategory[c] ?? 0,
-          }))}
-        />
-        <ReportTable
-          title="ผู้ใช้ตามสิทธิ์การใช้งาน"
+          title="ผู้ใช้ตามสิทธิ์การเข้าถึง"
           rows={(Object.keys(ROLE_LABELS) as UserRole[])
             .filter((r) => r !== "guest")
             .map((r) => ({ label: ROLE_LABELS[r], count: report.usersByRole[r] ?? 0 }))}
@@ -66,7 +56,7 @@ export default async function AdminReportsPage() {
       </div>
 
       <section className="mt-8">
-        <h2 className="text-lg font-semibold text-ink-900">ที่พักยอดนิยม (เข้าชมสูงสุด)</h2>
+        <h2 className="text-lg font-semibold text-ink-900">ที่พักยอดนิยม (เฉพาะยอดสูงสุด)</h2>
         {report.topViewedProperties.length === 0 ? (
           <p className="mt-3 rounded-2xl border border-dashed border-ink-300 p-6 text-center text-sm text-ink-500">
             ยังไม่มีข้อมูลการเข้าชม

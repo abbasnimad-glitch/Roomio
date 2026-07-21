@@ -1,4 +1,4 @@
-import type { RoomType, ServiceCategory, AvailabilityStatus, GenderPolicy, PropertyType, ListingStatus, BoostPaymentStatus } from "@/types/database";
+import type { RoomType, AvailabilityStatus, GenderPolicy, PropertyType, ListingStatus, BoostPaymentStatus } from "@/types/database";
 import type { Locale } from "@/lib/i18n/translations";
 
 // ------------------------------------------------------------
@@ -7,8 +7,11 @@ import type { Locale } from "@/lib/i18n/translations";
 // Keeping the original ALL-CAPS constant names as English-only fallbacks
 // would invite someone to import the wrong one by habit, so those names
 // now point at the locale-aware getters instead — see usage note below.
+//
+// Service categories are NOT here — they moved to the service_categories
+// database table (admin-manageable) as of migration 0023. Use
+// getServiceCategories() from lib/queries.ts instead.
 // ------------------------------------------------------------
-
 const PROPERTY_TYPE_LABELS_TH: Record<PropertyType, string> = {
   dormitory: "หอพัก",
   rental_house: "บ้านเช่า",
@@ -112,32 +115,6 @@ export const AVAILABILITY_COLORS: Record<AvailabilityStatus, string> = {
   full: "bg-ink-100 text-ink-500",
 };
 
-const SERVICE_CATEGORY_LABELS_TH: Record<ServiceCategory, string> = {
-  electrician: "ช่างไฟฟ้า",
-  aircon_repair: "ซ่อมแอร์",
-  appliance_repair: "ซ่อมเครื่องใช้ไฟฟ้า",
-  plumber: "ช่างประปา",
-  general_technician: "ช่างทั่วไป",
-};
-const SERVICE_CATEGORY_LABELS_EN: Record<ServiceCategory, string> = {
-  electrician: "Electrician",
-  aircon_repair: "Air conditioner repair",
-  appliance_repair: "Appliance repair",
-  plumber: "Plumber",
-  general_technician: "General technician",
-};
-export function getServiceCategoryLabels(locale: Locale): Record<ServiceCategory, string> {
-  return locale === "th" ? SERVICE_CATEGORY_LABELS_TH : SERVICE_CATEGORY_LABELS_EN;
-}
-
-export const SERVICE_CATEGORY_ICONS: Record<ServiceCategory, string> = {
-  electrician: "Zap",
-  aircon_repair: "Wind",
-  appliance_repair: "Wrench",
-  plumber: "Droplets",
-  general_technician: "Hammer",
-};
-
 // ------------------------------------------------------------
 // Backward-compatible English-only exports.
 // Several existing components (mostly ones not yet localized, e.g. admin
@@ -152,7 +129,6 @@ export const LISTING_STATUS_LABELS = LISTING_STATUS_LABELS_EN;
 export const ROOM_TYPE_LABELS = ROOM_TYPE_LABELS_EN;
 export const GENDER_POLICY_LABELS = GENDER_POLICY_LABELS_EN;
 export const AVAILABILITY_LABELS = AVAILABILITY_LABELS_EN;
-export const SERVICE_CATEGORY_LABELS = SERVICE_CATEGORY_LABELS_EN;
 
 // ------------------------------------------------------------
 // Loyalty / membership tiers
@@ -191,6 +167,7 @@ export const BOOST_PLAN = {
   days: 7,
   priceTHB: 100,
 } as const;
+
 // Manual contact channel for Boost/Premium payments while the in-app
 // payment UI (Stripe/PromptPay QR) is disabled — real payment requests
 // now happen entirely off this deployment via Messenger, with the admin

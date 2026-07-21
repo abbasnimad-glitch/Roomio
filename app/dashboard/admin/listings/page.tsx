@@ -3,7 +3,7 @@ import { ExternalLink } from "lucide-react";
 import { getPendingProperties, getPendingServiceProviders } from "@/lib/queries";
 import ApproveRejectButtons from "@/components/ApproveRejectButtons";
 import { formatBaht } from "@/lib/utils";
-import { ROOM_TYPE_LABELS, SERVICE_CATEGORY_LABELS } from "@/lib/constants";
+import { ROOM_TYPE_LABELS } from "@/lib/constants";
 
 export const metadata = { title: "อนุมัติประกาศ — Admin" };
 
@@ -58,7 +58,7 @@ export default async function AdminListingsPage() {
                     {s.business_name}
                     <ExternalLink className="h-3.5 w-3.5 text-ink-400" />
                   </Link>
-                  <p className="mt-0.5 text-xs text-ink-500">{SERVICE_CATEGORY_LABELS[s.category]} · {s.phone}</p>
+                  <p className="mt-0.5 text-xs text-ink-500">{s.category?.name_th ?? "—"} · {s.phone}</p>
                 </div>
                 <ApproveRejectButtons kind="service_provider" id={s.id} />
               </div>

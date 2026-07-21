@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Phone, MessageCircle, Clock, MapPin, User as UserIcon } from "lucide-react";
 import type { ServiceProvider, Review, Profile } from "@/types/database";
 import { isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
-import { getServiceCategoryLabels } from "@/lib/constants";
 import RatingStars from "@/components/RatingStars";
 import FavoriteButton from "@/components/FavoriteButton";
 import PropertyGallery from "@/components/PropertyGallery";
@@ -15,7 +14,7 @@ import FeaturedBadge from "@/components/FeaturedBadge";
 import BoostBadge from "@/components/BoostBadge";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { ANALYTICS_EVENTS } from "@/lib/analytics";
-import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
@@ -33,7 +32,6 @@ export default function ServiceProviderDetailContent({
   viewer: Profile | null;
 }) {
   const { t, locale } = useLanguage();
-  const serviceCategoryLabels = getServiceCategoryLabels(locale);
   const images = provider.images ?? [];
   const districtsCount = provider.working_districts.length;
 
@@ -66,7 +64,9 @@ export default function ServiceProviderDetailContent({
                 {isCurrentlyFeatured(provider.is_featured, provider.featured_until) && <FeaturedBadge />}
                 {provider.owner?.is_verified && <VerifiedBadge label={t.service.verifiedTechnician} />}
               </div>
-              <p className="mt-1 text-sm font-medium text-primary-600">{serviceCategoryLabels[provider.category]}</p>
+              <p className="mt-1 text-sm font-medium text-primary-600">
+                {provider.category ? localizedName(locale, provider.category.name_th, provider.category.name_en) : ""}
+              </p>
               {provider.owner_id && (
                 <Link
                   href={`/profile/${provider.owner_id}`}

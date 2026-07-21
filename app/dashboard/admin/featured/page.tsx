@@ -2,7 +2,7 @@ import { getApprovedPropertiesForAdmin, getApprovedServiceProvidersForAdmin } fr
 import { setPropertyFeatured, setServiceProviderFeatured } from "@/lib/actions/admin";
 import FeaturedControl from "@/components/FeaturedControl";
 import { formatBaht } from "@/lib/utils";
-import { ROOM_TYPE_LABELS, SERVICE_CATEGORY_LABELS } from "@/lib/constants";
+import { ROOM_TYPE_LABELS } from "@/lib/constants";
 
 export const metadata = { title: "จัดการประกาศแนะนำ — Admin" };
 
@@ -16,7 +16,7 @@ export default async function AdminFeaturedPage() {
     <div className="container-app py-8">
       <h1 className="text-2xl font-bold text-ink-900">จัดการประกาศแนะนำ</h1>
       <p className="mt-1 text-sm text-ink-500">
-        ตั้งค่าที่พักหรือผู้ให้บริการให้เป็น &ldquo;แนะนำ&rdquo; เพื่อแสดงเด่นและเรียงลำดับก่อนในผลการค้นหา
+        ตั้งค่าที่พักหรือผู้ให้บริการให้เป็น &ldquo;แนะนำ&rdquo; เพื่อแสดงเด่นเป็นลำดับต้นๆ ในผลการค้นหา
       </p>
 
       <section className="mt-8">
@@ -59,7 +59,7 @@ export default async function AdminFeaturedPage() {
               <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink-100 p-4">
                 <div>
                   <p className="font-semibold text-ink-900">{s.business_name}</p>
-                  <p className="text-xs text-ink-500">{SERVICE_CATEGORY_LABELS[s.category]} · {s.phone}</p>
+                  <p className="text-xs text-ink-500">{s.category?.name_th ?? "—"} · {s.phone}</p>
                 </div>
                 <FeaturedControl
                   id={s.id}

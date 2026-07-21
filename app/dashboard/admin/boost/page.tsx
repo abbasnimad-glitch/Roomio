@@ -2,7 +2,7 @@ import { getApprovedPropertiesForAdmin, getApprovedServiceProvidersForAdmin } fr
 import { setPropertyBoost, setServiceProviderBoost } from "@/lib/actions/admin";
 import BoostControl from "@/components/BoostControl";
 import { formatBaht } from "@/lib/utils";
-import { ROOM_TYPE_LABELS, SERVICE_CATEGORY_LABELS } from "@/lib/constants";
+import { ROOM_TYPE_LABELS } from "@/lib/constants";
 
 export const metadata = { title: "จัดการดันประกาศ — Admin" };
 
@@ -16,7 +16,7 @@ export default async function AdminBoostPage() {
     <div className="container-app py-8">
       <h1 className="text-2xl font-bold text-ink-900">จัดการดันประกาศ</h1>
       <p className="mt-1 text-sm text-ink-500">
-        ตั้งค่าช่วงเวลาดันประกาศให้ที่พักหรือผู้ให้บริการแสดงเด่นและเรียงลำดับก่อนในช่วงเวลาที่กำหนด
+        ตั้งค่าช่วงเวลาดันประกาศให้ที่พักหรือผู้ให้บริการ แสดงเด่นเป็นลำดับต้นๆ ในช่วงเวลาที่กำหนด
       </p>
 
       <section className="mt-8">
@@ -60,7 +60,7 @@ export default async function AdminBoostPage() {
               <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink-100 p-4">
                 <div>
                   <p className="font-semibold text-ink-900">{s.business_name}</p>
-                  <p className="text-xs text-ink-500">{SERVICE_CATEGORY_LABELS[s.category]} · {s.phone}</p>
+                  <p className="text-xs text-ink-500">{s.category?.name_th ?? "—"} · {s.phone}</p>
                 </div>
                 <BoostControl
                   id={s.id}

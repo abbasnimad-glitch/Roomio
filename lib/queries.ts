@@ -237,24 +237,32 @@ export async function getAvailableNowProperties(limit = 8): Promise<Property[]> 
   return [...boosted, ...rest].slice(0, limit);
 }
 
-export async function getServiceProviders(category?: string, districtId?: number) {
+export async function getServiceCategories(): Promise<import("@/types/database").ServiceCategoryRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("service_categories").select("*").order("sort_order");
+  return data ?? [];
+}
+
+export async function getServiceProviders(categoryId?: number, districtId?: number) {
   const supabase = await createClient();
   const nowIso = new Date().toISOString();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- same reason as searchProperties' applyFilters.
   function applyProviderFilters(q: any) {
     let query = q;
-    if (category) query = query.eq("category", category);
+    if (categoryId) query = query.eq("category_id", categoryId);
     if (districtId) query = query.contains("working_districts", [districtId]);
     return query;
   }
+
+  const providerSelect = "*, images:service_provider_images(*), owner:profiles!left(is_verified), category:service_categories(*)";
 
   // Currently boosted (and not expired) providers always sort first — same
   // "boosted AND not expired" condition used on the homepage/searchProperties.
   const boostedQuery = applyProviderFilters(
     supabase
       .from("service_providers")
-      .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
+      .select(providerSelect)
       .eq("status", "approved")
       .eq("is_boosted", true)
       .or(`boost_end_at.is.null,boost_end_at.gt.${nowIso}`)
@@ -269,10 +277,7 @@ export async function getServiceProviders(category?: string, districtId?: number
 
   // Everything else, excluding an expired boost from any special treatment.
   let restQuery = applyProviderFilters(
-    supabase
-      .from("service_providers")
-      .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
-      .eq("status", "approved")
+    supabase.from("service_providers").select(providerSelect).eq("status", "approved")
   ).order("is_featured", { ascending: false }).order("rating_avg", { ascending: false });
   if (boosted.length > 0) {
     restQuery = restQuery.not("id", "in", `(${boosted.map((p) => p.id).join(",")})`);
@@ -293,7 +298,7 @@ export const getServiceProviderBySlug = cache(async (slug: string): Promise<Serv
   // listing through this same public-facing page.
   const { data, error } = await supabase
     .from("service_providers")
-    .select("*, images:service_provider_images(*), owner:profiles!left(full_name, is_verified)")
+    .select("*, images:service_provider_images(*), owner:profiles!left(full_name, is_verified), category:service_categories(*)")
     .eq("slug", decodedSlug)
     .single();
   if (error) return null;
@@ -516,7 +521,7 @@ export async function getPendingServiceProviders(): Promise<ServiceProvider[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("service_providers")
-    .select("*, images:service_provider_images(*)")
+    .select("*, images:service_provider_images(*), category:service_categories(*)")
     .eq("status", "pending")
     .order("created_at", { ascending: true });
   return (data ?? []) as unknown as ServiceProvider[];
@@ -538,7 +543,7 @@ export async function getApprovedServiceProvidersForAdmin(): Promise<ServiceProv
   const supabase = await createClient();
   const { data } = await supabase
     .from("service_providers")
-    .select("*, images:service_provider_images(*)")
+    .select("*, images:service_provider_images(*), category:service_categories(*)")
     .eq("status", "approved")
     .order("is_boosted", { ascending: false })
     .order("is_featured", { ascending: false })
@@ -551,7 +556,7 @@ export async function getAdminReports() {
 
   const [{ data: properties }, { data: providers }, { data: profiles }] = await Promise.all([
     supabase.from("properties").select("status, property_type, district_id, view_count, name, district:districts(name_en)"),
-    supabase.from("service_providers").select("status, category"),
+    supabase.from("service_providers").select("status, category:service_categories(name_th)"),
     supabase.from("profiles").select("role"),
   ]);
 
@@ -569,7 +574,10 @@ export async function getAdminReports() {
     name: string;
     district: { name_en: string } | null;
   }[];
-  const providerRows = (providers ?? []) as unknown as { status: ListingStatus; category: string }[];
+  const providerRows = (providers ?? []) as unknown as {
+    status: ListingStatus;
+    category: { name_th: string } | null;
+  }[];
   const profileRows = (profiles ?? []) as unknown as { role: string }[];
 
   const topViewedProperties = [...propertyRows]
@@ -583,6 +591,16 @@ export async function getAdminReports() {
     districtCounts.set(key, (districtCounts.get(key) ?? 0) + 1);
   }
 
+  // Service categories are now admin-managed rows in the database, not a
+  // fixed enum, so this is grouped the same way as propertiesByDistrict
+  // (a plain label/count array) rather than a Record keyed by a compile-time
+  // known set of categories.
+  const categoryCounts = new Map<string, number>();
+  for (const p of providerRows) {
+    const key = p.category?.name_th ?? "ไม่ระบุ";
+    categoryCounts.set(key, (categoryCounts.get(key) ?? 0) + 1);
+  }
+
   return {
     propertiesByStatus: countBy(propertyRows.map((p) => ({ key: p.status }))),
     propertiesByType: countBy(propertyRows.map((p) => ({ key: p.property_type }))),
@@ -590,7 +608,9 @@ export async function getAdminReports() {
       .sort((a, b) => b[1] - a[1])
       .map(([district, count]) => ({ district, count })),
     providersByStatus: countBy(providerRows.map((p) => ({ key: p.status }))),
-    providersByCategory: countBy(providerRows.map((p) => ({ key: p.category }))),
+    providersByCategory: Array.from(categoryCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, count]) => ({ label, count })),
     usersByRole: countBy(profileRows.map((p) => ({ key: p.role }))),
     topViewedProperties,
   };
