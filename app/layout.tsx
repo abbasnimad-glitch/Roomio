@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   description:
     "Find dormitories, rental houses, and trusted local service providers in Songkhla Province, Thailand — all in one place.",
   manifest: "/manifest.json",
+  verification: {
+    google: "spZDmdfMybKnqMW_Sq2wkTSW65qD1APzZ4UynmCJVCI",
+  },
   alternates: {
     canonical: "/",
   },
