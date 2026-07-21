@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Phone, MessageCircle, Facebook, Wind, Sofa, ParkingCircle, Wifi, Shield, WashingMachine } from "lucide-react";
+import Link from "next/link";
+import { Phone, MessageCircle, Facebook, Wind, Sofa, ParkingCircle, Wifi, Shield, WashingMachine, User as UserIcon } from "lucide-react";
 import { getPropertyBySlug, getPropertyReviews, getMyReview, getMyProfile } from "@/lib/queries";
 import { formatBaht, publicImageUrl, cn, truncate, isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
 import { ROOM_TYPE_LABELS, GENDER_POLICY_LABELS, AVAILABILITY_LABELS, AVAILABILITY_COLORS } from "@/lib/constants";
@@ -75,6 +76,8 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   ].filter((f) => f.active);
 
   const images = property.images ?? [];
+  const isPending = property.status === "pending";
+  const isOwnerOrAdmin = profile && (profile.id === property.owner_id || profile.role === "admin");
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -112,6 +115,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
+      {isPending && isOwnerOrAdmin && (
+        <div className="mb-4 rounded-xl bg-accent-50 px-4 py-3 text-sm font-medium text-accent-600">
+          ประกาศนี้ยังรออนุมัติ — คุณเห็นหน้านี้เพราะเป็น{profile?.role === "admin" ? "แอดมิน" : "เจ้าของประกาศ"} ผู้ใช้ทั่วไปยังไม่เห็นหน้านี้จนกว่าจะได้รับการอนุมัติ
+        </div>
+      )}
+
       <PropertyGallery images={images} bucket="property-images" title={property.name} />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
@@ -128,6 +137,15 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               <p className="mt-1 text-sm text-ink-500">
                 {property.address}, {property.district?.name_en}
               </p>
+              {property.owner && (
+                <Link
+                  href={`/profile/${property.owner.id}`}
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:underline"
+                >
+                  <UserIcon className="h-3.5 w-3.5" />
+                  ลงประกาศโดย {property.owner.full_name}
+                </Link>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <FavoriteButton propertyId={property.id} />

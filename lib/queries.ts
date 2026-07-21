@@ -144,11 +144,16 @@ export async function searchProperties(params: PropertySearchParams) {
 export const getPropertyBySlug = cache(async (slug: string): Promise<Property | null> => {
   const decodedSlug = decodeURIComponent(slug);
   const supabase = await createClient();
+  // No .eq("status", "approved") filter here — RLS on the properties table
+  // already restricts visibility to approved rows for anonymous/other users,
+  // while still letting the owner and admins see their own pending listing
+  // through this same page (policy: status='approved' OR owner_id=auth.uid()
+  // OR is_admin()). Filtering status here too would just re-block the owner
+  // and admin from a page RLS already says they're allowed to see.
   const { data, error } = await supabase
     .from("properties")
     .select(PROPERTY_SELECT)
     .eq("slug", decodedSlug)
-    .eq("status", "approved")
     .single();
   if (error) return null;
 
@@ -283,11 +288,13 @@ export async function getServiceProviders(category?: string, districtId?: number
 export const getServiceProviderBySlug = cache(async (slug: string): Promise<ServiceProvider | null> => {
   const decodedSlug = decodeURIComponent(slug);
   const supabase = await createClient();
+  // Same reasoning as getPropertyBySlug — rely on RLS instead of an
+  // app-level status filter, so the owner/admin can preview a pending
+  // listing through this same public-facing page.
   const { data, error } = await supabase
     .from("service_providers")
     .select("*, images:service_provider_images(*), owner:profiles!left(is_verified)")
     .eq("slug", decodedSlug)
-    .eq("status", "approved")
     .single();
   if (error) return null;
   return data as unknown as ServiceProvider;

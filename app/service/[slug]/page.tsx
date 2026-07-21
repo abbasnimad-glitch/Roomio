@@ -81,6 +81,7 @@ export default async function ServiceProviderPage({ params }: { params: Promise<
         reviews={reviews}
         myReview={myReview}
         profileId={profile?.id ?? null}
+        viewer={profile}
       />
     </div>
   );

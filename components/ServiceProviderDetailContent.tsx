@@ -1,7 +1,8 @@
 "use client";
 
-import { Phone, MessageCircle, Clock, MapPin } from "lucide-react";
-import type { ServiceProvider, Review } from "@/types/database";
+import Link from "next/link";
+import { Phone, MessageCircle, Clock, MapPin, User as UserIcon } from "lucide-react";
+import type { ServiceProvider, Review, Profile } from "@/types/database";
 import { isCurrentlyFeatured, isCurrentlyBoosted } from "@/lib/utils";
 import { getServiceCategoryLabels } from "@/lib/constants";
 import RatingStars from "@/components/RatingStars";
@@ -23,11 +24,13 @@ export default function ServiceProviderDetailContent({
   reviews,
   myReview,
   profileId,
+  viewer,
 }: {
   provider: ServiceProvider;
   reviews: Review[];
   myReview: Review | null;
   profileId: string | null;
+  viewer: Profile | null;
 }) {
   const { t, locale } = useLanguage();
   const serviceCategoryLabels = getServiceCategoryLabels(locale);
@@ -39,8 +42,18 @@ export default function ServiceProviderDetailContent({
       ? `${t.service.servesPrefix} ${districtsCount} ${t.service.servesSuffix}`
       : `${t.service.servesPrefix} ${districtsCount} district${districtsCount === 1 ? "" : "s"} in Songkhla`;
 
+  const isPending = provider.status === "pending";
+  const isOwnerOrAdmin = viewer && (viewer.id === provider.owner_id || viewer.role === "admin");
+
   return (
     <>
+      {isPending && isOwnerOrAdmin && (
+        <div className="mb-4 rounded-xl bg-accent-50 px-4 py-3 text-sm font-medium text-accent-600">
+          ประกาศนี้ยังรออนุมัติ — คุณเห็นหน้านี้เพราะเป็น{viewer?.role === "admin" ? "แอดมิน" : "เจ้าของประกาศ"}{" "}
+          ผู้ใช้ทั่วไปยังไม่เห็นหน้านี้จนกว่าจะได้รับการอนุมัติ
+        </div>
+      )}
+
       <PropertyGallery images={images} bucket="provider-images" title={provider.business_name} />
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
@@ -54,6 +67,15 @@ export default function ServiceProviderDetailContent({
                 {provider.owner?.is_verified && <VerifiedBadge label={t.service.verifiedTechnician} />}
               </div>
               <p className="mt-1 text-sm font-medium text-primary-600">{serviceCategoryLabels[provider.category]}</p>
+              {provider.owner_id && (
+                <Link
+                  href={`/profile/${provider.owner_id}`}
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-ink-600 hover:underline"
+                >
+                  <UserIcon className="h-3.5 w-3.5" />
+                  {locale === "th" ? "ดูโปรไฟล์ผู้ให้บริการ" : "View provider profile"}
+                </Link>
+              )}
             </div>
             <FavoriteButton serviceProviderId={provider.id} />
           </div>

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import { getPendingProperties, getPendingServiceProviders } from "@/lib/queries";
 import ApproveRejectButtons from "@/components/ApproveRejectButtons";
 import { formatBaht } from "@/lib/utils";
@@ -26,8 +28,11 @@ export default async function AdminListingsPage() {
             {properties.map((p) => (
               <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink-100 p-4">
                 <div>
-                  <p className="font-semibold text-ink-900">{p.name}</p>
-                  <p className="text-xs text-ink-500">
+                  <Link href={`/property/${p.slug}`} target="_blank" className="flex items-center gap-1.5 font-semibold text-ink-900 hover:text-primary-600">
+                    {p.name}
+                    <ExternalLink className="h-3.5 w-3.5 text-ink-400" />
+                  </Link>
+                  <p className="mt-0.5 text-xs text-ink-500">
                     {p.district?.name_en} · {ROOM_TYPE_LABELS[p.room_type]} · {formatBaht(p.price_monthly)}/เดือน
                   </p>
                 </div>
@@ -49,8 +54,11 @@ export default async function AdminListingsPage() {
             {providers.map((s) => (
               <div key={s.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ink-100 p-4">
                 <div>
-                  <p className="font-semibold text-ink-900">{s.business_name}</p>
-                  <p className="text-xs text-ink-500">{SERVICE_CATEGORY_LABELS[s.category]} · {s.phone}</p>
+                  <Link href={`/service/${s.slug}`} target="_blank" className="flex items-center gap-1.5 font-semibold text-ink-900 hover:text-primary-600">
+                    {s.business_name}
+                    <ExternalLink className="h-3.5 w-3.5 text-ink-400" />
+                  </Link>
+                  <p className="mt-0.5 text-xs text-ink-500">{SERVICE_CATEGORY_LABELS[s.category]} · {s.phone}</p>
                 </div>
                 <ApproveRejectButtons kind="service_provider" id={s.id} />
               </div>
