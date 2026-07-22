@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, Building2, Wrench, Coins, ClipboardCheck, Ban, FileBarChart, Star, Zap, BadgeCheck, CreditCard, Activity } from "lucide-react";
+import { Users, Building2, Wrench, Coins, ClipboardCheck, Ban, FileBarChart, Star, Zap, BadgeCheck, CreditCard, Activity, Tags } from "lucide-react";
 import { getAdminStats, getAdminAnalyticsSummary } from "@/lib/queries";
 
 export const metadata = { title: "Admin — ภาพรวมระบบ" };
@@ -20,7 +20,9 @@ export default async function AdminOverviewPage() {
     { label: "จัดการประกาศแนะนำ", value: null, icon: Star, href: "/dashboard/admin/featured" },
     { label: "จัดการดันประกาศ", value: null, icon: Zap, href: "/dashboard/admin/boost" },
     { label: "จัดการยืนยันที่พัก", value: null, icon: BadgeCheck, href: "/dashboard/admin/verification" },
+    { label: "หมวดหมู่บริการ", value: null, icon: Tags, href: "/dashboard/admin/categories" },
     { label: "รายงานภาพรวม", value: null, icon: FileBarChart, href: "/dashboard/admin/reports" },
+
   ];
 
   return (
