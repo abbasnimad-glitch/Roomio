@@ -7,6 +7,30 @@ import type { ActionResult } from "@/lib/actions/provider";
 import PropertyLocationPicker, { DEFAULT_LAT, DEFAULT_LNG } from "@/components/PropertyLocationPicker";
 import { useLanguage, localizedName } from "@/lib/i18n/LanguageContext";
 
+const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
+
+const DAY_LABELS_TH: Record<(typeof DAY_KEYS)[number], string> = {
+  mon: "วันจันทร์",
+  tue: "วันอังคาร",
+  wed: "วันพุธ",
+  thu: "วันพฤหัสบดี",
+  fri: "วันศุกร์",
+  sat: "วันเสาร์",
+  sun: "วันอาทิตย์",
+};
+
+const DAY_LABELS_EN: Record<(typeof DAY_KEYS)[number], string> = {
+  mon: "Monday",
+  tue: "Tuesday",
+  wed: "Wednesday",
+  thu: "Thursday",
+  fri: "Friday",
+  sat: "Saturday",
+  sun: "Sunday",
+};
+
+type DayHours = { open: string; close: string } | null;
+
 export default function ServiceProviderForm({
   mode,
   provider,
@@ -28,6 +52,28 @@ export default function ServiceProviderForm({
     lat: provider?.lat ?? DEFAULT_LAT,
     lng: provider?.lng ?? DEFAULT_LNG,
   });
+
+  const [businessHours, setBusinessHours] = useState<Record<string, DayHours>>(() => {
+    const initial: Record<string, DayHours> = {};
+    for (const key of DAY_KEYS) {
+      initial[key] = provider?.business_hours?.[key] ?? null;
+    }
+    return initial;
+  });
+
+  function toggleDay(key: string, isOpen: boolean) {
+    setBusinessHours((prev) => ({
+      ...prev,
+      [key]: isOpen ? { open: prev[key]?.open ?? "09:00", close: prev[key]?.close ?? "18:00" } : null,
+    }));
+  }
+
+  function updateDayTime(key: string, field: "open" | "close", value: string) {
+    setBusinessHours((prev) => ({
+      ...prev,
+      [key]: prev[key] ? { ...prev[key]!, [field]: value } : { open: "09:00", close: "18:00", [field]: value },
+    }));
+  }
 
   function handleSubmit(formData: FormData) {
     setMessage(null);
@@ -134,6 +180,52 @@ export default function ServiceProviderForm({
             </label>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label className="text-xs font-semibold text-ink-700">
+          {locale === "th" ? "เวลาทำการ" : "Business hours"}
+        </label>
+        <div className="mt-2 flex flex-col divide-y divide-ink-100 rounded-xl border border-ink-100">
+          {DAY_KEYS.map((key) => {
+            const hours = businessHours[key];
+            const isOpen = hours !== null;
+            const label = locale === "th" ? DAY_LABELS_TH[key] : DAY_LABELS_EN[key];
+            return (
+              <div key={key} className="flex flex-wrap items-center gap-3 px-4 py-2.5">
+                <label className="flex w-32 items-center gap-2 text-sm text-ink-700">
+                  <input
+                    type="checkbox"
+                    checked={isOpen}
+                    onChange={(e) => toggleDay(key, e.target.checked)}
+                    className="rounded"
+                  />
+                  {label}
+                </label>
+                {isOpen ? (
+                  <div className="flex items-center gap-2 text-sm">
+                    <input
+                      type="time"
+                      value={hours!.open}
+                      onChange={(e) => updateDayTime(key, "open", e.target.value)}
+                      className="rounded-lg border border-ink-300 px-2 py-1 text-sm focus-ring"
+                    />
+                    <span className="text-ink-400">–</span>
+                    <input
+                      type="time"
+                      value={hours!.close}
+                      onChange={(e) => updateDayTime(key, "close", e.target.value)}
+                      className="rounded-lg border border-ink-300 px-2 py-1 text-sm focus-ring"
+                    />
+                  </div>
+                ) : (
+                  <span className="text-sm text-ink-400">{locale === "th" ? "ปิด" : "Closed"}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <input type="hidden" name="business_hours" value={JSON.stringify(businessHours)} />
       </div>
 
       <button

@@ -30,6 +30,17 @@ function readProviderFields(formData: FormData) {
     .map((v) => Number(v))
     .filter((n) => !Number.isNaN(n));
 
+  let businessHours: Record<string, { open: string; close: string } | null> = {};
+  const rawHours = formData.get("business_hours");
+  if (typeof rawHours === "string" && rawHours.trim()) {
+    try {
+      const parsed = JSON.parse(rawHours);
+      if (parsed && typeof parsed === "object") businessHours = parsed;
+    } catch {
+      businessHours = {};
+    }
+  }
+
   return {
     business_name: String(formData.get("business_name") ?? "").trim(),
     category_id: Number(formData.get("category_id") ?? 0),
@@ -39,6 +50,7 @@ function readProviderFields(formData: FormData) {
     working_districts: workingDistricts,
     lat: formData.get("lat") ? Number(formData.get("lat")) : null,
     lng: formData.get("lng") ? Number(formData.get("lng")) : null,
+    business_hours: businessHours,
   };
 }
 
