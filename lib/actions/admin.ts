@@ -38,6 +38,34 @@ export async function setServiceProviderStatus(
   return { success: true, message: status === "approved" ? "อนุมัติผู้ให้บริการแล้ว" : "ปฏิเสธผู้ให้บริการแล้ว" };
 }
 
+// ------------------------------------------------------------
+// Admin delete — unlike deleteProperty/deleteServiceProvider in
+// owner.ts/provider.ts, these are NOT filtered by owner_id, so an
+// admin can remove any listing regardless of who owns it. Gated by
+// requireAdmin() only.
+// ------------------------------------------------------------
+export async function deletePropertyAsAdmin(propertyId: string): Promise<ActionResult> {
+  const gate = await requireAdmin();
+  if (!gate.ok) return { success: false, message: gate.message };
+
+  const { error } = await gate.supabase.from("properties").delete().eq("id", propertyId);
+  if (error) return { success: false, message: error.message };
+
+  revalidatePath("/dashboard/admin/listings");
+  return { success: true, message: "ลบประกาศที่พักเรียบร้อยแล้ว" };
+}
+
+export async function deleteServiceProviderAsAdmin(providerId: string): Promise<ActionResult> {
+  const gate = await requireAdmin();
+  if (!gate.ok) return { success: false, message: gate.message };
+
+  const { error } = await gate.supabase.from("service_providers").delete().eq("id", providerId);
+  if (error) return { success: false, message: error.message };
+
+  revalidatePath("/dashboard/admin/listings");
+  return { success: true, message: "ลบประกาศผู้ให้บริการเรียบร้อยแล้ว" };
+}
+
 export async function setUserRole(userId: string, role: UserRole): Promise<ActionResult> {
   const gate = await requireAdmin();
   if (!gate.ok) return { success: false, message: gate.message };
